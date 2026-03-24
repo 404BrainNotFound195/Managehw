@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ManageHw — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --border: #252a3a;
+    --border2: #313851;
+    --text: #e8eaf0;
+    --text2: #8b92a8;
+    --text3: #545c74;
+    --accent: #e8501e;
+    --accent-hover: #ff6535;
+    --accent-glow: rgba(232,80,30,0.18);
+    --blue: #3b82f6;
+    --green: #22c55e;
+    --red: #ef4444;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Fira Code', monospace;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--surface2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--surface2) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* Radial glow */
+  body::after {
+    content: '';
+    position: fixed;
+    width: 600px; height: 600px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: 16px;
+    padding: 40px 44px;
+    width: 420px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
+    animation: fadeUp 0.4s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .logo-hw { color: var(--accent); }
+  .logo-sub {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 28px;
+    border-bottom: 1.5px solid var(--border2);
+  }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--text3);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1.5px;
+    transition: all 0.2s;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover:not(.active) { color: var(--text2); }
+
+  .form { display: none; flex-direction: column; gap: 14px; }
+  .form.active { display: flex; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+  }
+  .field input {
+    padding: 11px 14px;
+    background: var(--bg);
+    border: 1.5px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .field input::placeholder { color: var(--text3); }
+
+  .btn-submit {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    margin-top: 4px;
+  }
+  .btn-submit:hover { background: var(--accent-hover); box-shadow: 0 4px 20px var(--accent-glow); }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .error-msg {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--red);
+    border-radius: 7px;
+    padding: 10px 12px;
+    font-size: 12px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .hint {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="card">
+    <div class="logo">Manage<span class="logo-hw">Hw</span></div>
+    <div class="logo-sub">Homework Time Manager</div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('login')">Sign In</div>
+      <div class="tab" onclick="switchTab('register')">Register</div>
+    </div>
+
+    <!-- LOGIN -->
+    <form class="form active" id="loginForm" onsubmit="login(event)">
+      <div class="error-msg" id="loginError"></div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn-submit" id="loginBtn">Sign In</button>
+      <div class="hint">No account? Switch to Register above.</div>
+    </form>
+
+    <!-- REGISTER -->
+    <form class="form" id="registerForm" onsubmit="register(event)">
+      <div class="error-msg" id="registerError"></div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="e.g. alex_student" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label>Password (min 6 chars)</label>
+        <input type="password" id="regPassword" placeholder="••••••••" autocomplete="new-password" required>
+      </div>
+      <button type="submit" class="btn-submit" id="registerBtn">Create Account</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0)===( tab==='login')));
+  document.getElementById('loginForm').classList.toggle('active', tab==='login');
+  document.getElementById('registerForm').classList.toggle('active', tab==='register');
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearError(id) { document.getElementById(id).classList.remove('show'); }
+
+async function login(e) {
+  e.preventDefault();
+  clearError('loginError');
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+
+  try {
+    const r = await fetch('/api/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    window.location.href = '/dashboard';
+  } catch(err) {
+    showError('loginError', err.message);
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function register(e) {
+  e.preventDefault();
+  clearError('registerError');
+  const btn = document.getElementById('registerBtn');
+  btn.disabled = true; btn.textContent = 'Creating…';
+
+  try {
+    const r = await fetch('/api/auth/register', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        username: document.getElementById('regUsername').value,
+        email: document.getElementById('regEmail').value,
+        password: document.getElementById('regPassword').value
+      })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    window.location.href = '/dashboard';
+  } catch(err) {
+    showError('registerError', err.message);
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+// Check if already logged in
+fetch('/api/auth/me').then(r => { if (r.ok) window.location.href='/dashboard'; });
+</script>
+</body>
+</html>
